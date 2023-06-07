@@ -1,12 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MemeForge</title>
+	<title>Meme Generator</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<style>
+		.meme-container {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.meme-area {
+			width: 60%;
+			padding: 20px;
+		}
+
+		.meme-template {
+			width: 40%;
+			padding: 20px;
+		}
+
+		.meme-image {
+			max-width: 100%;
+			height: auto;
+			position: relative;
+		}
+
+		.text-overlay {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			text-align: center;
+		}
+
+		.text-overlay p {
+			color: white;
+			font-size: 32px;
+			font-weight: bold;
+			text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+			margin: 0;
+		}
+	</style>
 </head>
 <body>
-    
+	<div class="container mt-5">
+		<div class="meme-container">
+			<div class="meme-area">
+				<h2>Create Your Meme</h2>
+				<div class="form-group">
+					<label for="imageUpload">Upload Image:</label>
+					<input type="file" id="imageUpload" accept="image/*" class="form-control-file">
+				</div>
+				<div class="form-group">
+					<label for="topText">Top Text:</label>
+					<input type="text" id="topText" class="form-control">
+				</div>
+				<div class="form-group">
+					<label for="bottomText">Bottom Text:</label>
+					<input type="text" id="bottomText" class="form-control">
+				</div>
+				<button id="generateBtn" class="btn btn-primary">Generate Meme</button>
+			</div>
+			<div class="meme-template">
+				<h2>Select Meme Template</h2>
+				<div class="mb-3">
+					<img src="meme1.jpg" alt="Meme Template 1" class="meme-image">
+				</div>
+				<div class="mb-3">
+					<img src="meme2.jpg" alt="Meme Template 2" class="meme-image">
+				</div>
+				<!-- Add more meme templates as needed -->
+			</div>
+		</div>
+		<div id="memeResult" class="mt-5 text-center">
+			<!-- Meme will be displayed here -->
+		</div>
+		<div class="text-center mt-3">
+			<button id="downloadBtn" class="btn btn-success" disabled>Download Meme</button>
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+	<script>
+		$(document).ready(function() {
+			$("#generateBtn").click(function() {
+				var image = $("#imageUpload")[0].files[0];
+				var topText = $("#topText").val();
+				var bottomText = $("#bottomText").val();
+
+				if (image && topText && bottomText) {
+					var reader = new FileReader();
+					reader.onload = function(e) {
+						$("#memeResult").html(`
+							<div class="meme-image" style="background-image: url(${e.target.result})">
+								<div class="text-overlay">
+									<p class="top-text">${topText}</p>
+									<p class="bottom-text">${bottomText}</p>
+								</div>
+							</div>
+						`);
+						$("#downloadBtn").prop("disabled", false);
+					};
+					reader.readAsDataURL(image);
+				}
+			});
+
+			$("#downloadBtn").click(function() {
+				html2canvas($("#memeResult .meme-image")[0]).then(function(canvas) {
+					var link = document.createElement("a");
+					link.href = canvas.toDataURL();
+					link.download = "meme.png";
+					link.click();
+				});
+			});
+		});
+	</script>
 </body>
 </html>
